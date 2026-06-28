@@ -18,7 +18,17 @@ declare module "markdown-it-texmath" {
     | "beg_end";
 
   /**
-   * TexmathOptions configures delimiter handling and the KaTeX renderer.
+   * TexmathEngine is the renderer contract used by markdown-it-texmath.
+   */
+  export interface TexmathEngine {
+    /**
+     * renderToString serializes tex with the supplied KaTeX-compatible options.
+     */
+    renderToString(tex: string, options?: Katex.KatexOptions): string;
+  }
+
+  /**
+   * TexmathOptions configures delimiter handling and the math renderer.
    */
   export interface TexmathOptions {
     /**
@@ -27,9 +37,9 @@ declare module "markdown-it-texmath" {
     delimiters?: TexmathDelimiter | TexmathDelimiter[];
 
     /**
-     * engine is the KaTeX-compatible renderer object used by markdown-it-texmath.
+     * engine is the renderer object used by markdown-it-texmath.
      */
-    engine?: typeof Katex;
+    engine?: TexmathEngine;
 
     /**
      * katexOptions are forwarded to KaTeX renderToString calls.

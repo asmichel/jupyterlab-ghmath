@@ -1,17 +1,23 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { createMarkdownParser, extractHeadingTokens } from "../src/parser";
+import {
+  createMarkdownParser,
+  extractHeadingTokens,
+  MATH_DISPLAY_CLASS,
+  MATH_INLINE_CLASS,
+  MATH_PLACEHOLDER_CLASS
+} from "../src/parser";
 
 /**
- * KATEX_CLASS_PATTERN checks that a rendered snippet contains KaTeX markup.
+ * MATH_PLACEHOLDER_PATTERN checks that raw parser output contains placeholders.
  */
-const KATEX_CLASS_PATTERN = /class="katex/;
+const MATH_PLACEHOLDER_PATTERN = new RegExp(`class="${MATH_PLACEHOLDER_CLASS}`);
 
 /**
- * parser renders Markdown and math delimiter cases through markdown-it-texmath.
+ * parser renders Markdown and math delimiter cases as safe placeholders.
  */
-test("parser renders Markdown and supported math delimiters", async () => {
+test("parser emits placeholders for supported math delimiters", async () => {
   const parser = createMarkdownParser();
   const html = await parser.render(`# Heading
 
@@ -43,10 +49,15 @@ x + y = z
 `);
 
   assert.match(html, /<h1>Heading<\/h1>/);
-  assert.match(html, KATEX_CLASS_PATTERN);
+  assert.match(html, MATH_PLACEHOLDER_PATTERN);
+  assert.match(html, new RegExp(MATH_INLINE_CLASS));
+  assert.match(html, new RegExp(MATH_DISPLAY_CLASS));
   assert.doesNotMatch(html, /\$`\\sqrt/);
   assert.doesNotMatch(html, /‘/);
   assert.doesNotMatch(html, /```math/);
+  assert.doesNotMatch(html, /<math\b/);
+  assert.doesNotMatch(html, /<svg\b/);
+  assert.doesNotMatch(html, /class="katex/);
 });
 
 /**
@@ -61,6 +72,18 @@ const x = 1;
 
   assert.match(html, /<pre><code class="language-js">/);
   assert.match(html, /const x = 1;/);
+});
+
+/**
+ * parser leaves math-looking text inside ordinary code fences untouched.
+ */
+test("parser does not emit math placeholders inside code fences", async () => {
+  const parser = createMarkdownParser();
+  const html = await parser.render("```txt\n$x$ and $`y`$\n```\n");
+
+  assert.match(html, /<pre><code class="language-txt">/);
+  assert.match(html, /\$x\$/);
+  assert.doesNotMatch(html, MATH_PLACEHOLDER_PATTERN);
 });
 
 /**

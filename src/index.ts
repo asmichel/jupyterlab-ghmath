@@ -1,8 +1,8 @@
 import type { JupyterFrontEnd, JupyterFrontEndPlugin } from "@jupyterlab/application";
-import { ILatexTypesetter, IMarkdownParser } from "@jupyterlab/rendermime";
+import { IMarkdownParser, IRenderMimeRegistry } from "@jupyterlab/rendermime";
 
-import { createKatexTypesetter } from "./katexTypesetter";
 import { createMarkdownParser } from "./parser";
+import { githubMarkdownRendererFactory } from "./renderer";
 
 import "../style/index.css";
 
@@ -20,21 +20,21 @@ const markdownParserPlugin: JupyterFrontEndPlugin<IMarkdownParser> = {
 };
 
 /**
- * katexTypesetterPlugin provides the KaTeX typesetter with GitHub delimiter support.
+ * markdownRendererPlugin registers sanitizer-safe Markdown math rendering.
  */
-const katexTypesetterPlugin: JupyterFrontEndPlugin<ILatexTypesetter> = {
-  id: "jupyterlab-ghmath:katex-typesetter",
-  description: "Provides a KaTeX typesetter with GitHub `$`...`$` inline math support.",
+const markdownRendererPlugin: JupyterFrontEndPlugin<void> = {
+  id: "jupyterlab-ghmath:markdown-renderer",
+  description: "Renders Markdown math after Jupyter sanitizes placeholder HTML.",
   autoStart: true,
-  provides: ILatexTypesetter,
-  activate: (_app: JupyterFrontEnd): ILatexTypesetter => {
-    return createKatexTypesetter();
+  requires: [IRenderMimeRegistry],
+  activate: (_app: JupyterFrontEnd, rendermime: IRenderMimeRegistry): void => {
+    rendermime.addFactory(githubMarkdownRendererFactory, githubMarkdownRendererFactory.defaultRank);
   }
 };
 
 /**
  * plugins is the JupyterLab prebuilt extension entrypoint.
  */
-const plugins: JupyterFrontEndPlugin<unknown>[] = [markdownParserPlugin, katexTypesetterPlugin];
+const plugins: JupyterFrontEndPlugin<unknown>[] = [markdownParserPlugin, markdownRendererPlugin];
 
 export default plugins;

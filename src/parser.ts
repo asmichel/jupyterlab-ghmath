@@ -1,6 +1,6 @@
 import type { IMarkdownHeadingToken, IMarkdownParser } from "@jupyterlab/rendermime";
-import * as katex from "katex";
 import MarkdownIt from "markdown-it";
+import type { RenderRule } from "markdown-it/lib/renderer.mjs";
 import type Token from "markdown-it/lib/token.mjs";
 import texmath from "markdown-it-texmath";
 
@@ -10,14 +10,43 @@ import texmath from "markdown-it-texmath";
 const TEXMATH_DELIMITERS = ["gitlab", "dollars", "brackets", "beg_end"] as const;
 
 /**
+ * MATH_PLACEHOLDER_CLASS identifies TeX placeholders that survive sanitization.
+ */
+export const MATH_PLACEHOLDER_CLASS = "jp-ghmath-math";
+
+/**
+ * MATH_INLINE_CLASS marks placeholders that should render with inline KaTeX.
+ */
+export const MATH_INLINE_CLASS = "jp-ghmath-inline";
+
+/**
+ * MATH_DISPLAY_CLASS marks placeholders that should render with display KaTeX.
+ */
+export const MATH_DISPLAY_CLASS = "jp-ghmath-display";
+
+/**
+ * MATH_PLACEHOLDER_SELECTOR finds sanitizer-safe math placeholders in rendered HTML.
+ */
+export const MATH_PLACEHOLDER_SELECTOR = `.${MATH_PLACEHOLDER_CLASS}`;
+
+/**
  * HEADING_TAG_REGEX detects raw HTML heading blocks for outline metadata.
  */
 const HEADING_TAG_REGEX = /^<h[1-6]\b[^>]*>/i;
 
 /**
- * createMarkdownIt constructs the markdown-it parser used by the JupyterLab token.
+ * PLACEHOLDER_TEXMATH_ENGINE prevents markdown-it-texmath from loading KaTeX.
+ */
+const PLACEHOLDER_TEXMATH_ENGINE = {
+  renderToString: (tex: string, options: { displayMode?: boolean } = {}): string => {
+    return renderMathPlaceholderHTML(tex, options.displayMode === true);
+  }
+};
+
+/**
+ * createMarkdownIt constructs the markdown-it parser used by JupyterLab services.
  *
- * @returns A configured markdown-it parser with KaTeX math rendering enabled.
+ * @returns A configured markdown-it parser that emits sanitizer-safe math placeholders.
  */
 export function createMarkdownIt(): MarkdownIt {
   const markdownIt = new MarkdownIt({
@@ -28,11 +57,12 @@ export function createMarkdownIt(): MarkdownIt {
 
   markdownIt.use(texmath, {
     delimiters: [...TEXMATH_DELIMITERS],
-    engine: katex,
+    engine: PLACEHOLDER_TEXMATH_ENGINE,
     katexOptions: {
       throwOnError: false
     }
   });
+  installMathPlaceholderRenderers(markdownIt);
 
   return markdownIt;
 }
@@ -87,6 +117,61 @@ export function extractHeadingTokens(
   }
 
   return headings;
+}
+
+/**
+ * renderMathPlaceholderHTML serializes a TeX token as sanitizer-safe HTML.
+ *
+ * @param tex - The TeX source parsed by markdown-it-texmath.
+ * @param display - Whether the placeholder should render in display mode.
+ * @returns A placeholder span whose text content stores tex until post-sanitization rendering.
+ */
+export function renderMathPlaceholderHTML(tex: string, display: boolean): string {
+  const modeClass = display ? MATH_DISPLAY_CLASS : MATH_INLINE_CLASS;
+  return `<span class="${MATH_PLACEHOLDER_CLASS} ${modeClass}">${escapeHtml(tex)}</span>`;
+}
+
+/**
+ * installMathPlaceholderRenderers overrides texmath render rules with placeholders.
+ *
+ * @param markdownIt - The parser whose math token renderers should be replaced.
+ */
+function installMathPlaceholderRenderers(markdownIt: MarkdownIt): void {
+  const inlineRule: RenderRule = (tokens, index) => {
+    return renderMathPlaceholderHTML(tokens[index].content, false);
+  };
+  const inlineDisplayRule: RenderRule = (tokens, index) => {
+    return renderMathPlaceholderHTML(tokens[index].content, true);
+  };
+  const blockRule: RenderRule = (tokens, index) => {
+    return `<section>${renderMathPlaceholderHTML(tokens[index].content, true)}</section>\n`;
+  };
+  const blockWithEquationNumberRule: RenderRule = (tokens, index) => {
+    const token = tokens[index];
+    return `<section class="eqno">${renderMathPlaceholderHTML(token.content, true)}<span>(${escapeHtml(
+      token.info
+    )})</span></section>\n`;
+  };
+
+  markdownIt.renderer.rules.math_inline = inlineRule;
+  markdownIt.renderer.rules.math_inline_double = inlineDisplayRule;
+  markdownIt.renderer.rules.math_block = blockRule;
+  markdownIt.renderer.rules.math_block_eqno = blockWithEquationNumberRule;
+}
+
+/**
+ * escapeHtml encodes TeX text for placeholder element content.
+ *
+ * @param text - The raw TeX or equation-number text to encode.
+ * @returns HTML-safe text that decodes back through textContent.
+ */
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 }
 
 /**

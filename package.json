@@ -63,7 +63,6 @@
     "outputDir": "jupyterlab_ghmath/labextension",
     "disabledExtensions": [
       "@jupyterlab/markedparser-extension:plugin",
-      "@jupyterlab/katex-extension:plugin",
       "@jupyterlab/mathjax-extension:plugin",
       "@jupyterlab/mathjax2-extension:plugin"
     ]
