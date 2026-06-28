@@ -1,0 +1,68 @@
+{
+  "name": "jupyterlab-ghmath",
+  "version": "0.1.0",
+  "description": "JupyterLab Markdown parser with GitHub-style KaTeX math delimiters",
+  "keywords": [
+    "jupyter",
+    "jupyterlab",
+    "jupyterlab-extension",
+    "markdown",
+    "katex"
+  ],
+  "homepage": "https://github.com/local/jupyterlab-ghmath",
+  "bugs": {
+    "url": "https://github.com/local/jupyterlab-ghmath/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/local/jupyterlab-ghmath.git"
+  },
+  "license": "MIT",
+  "author": "Local",
+  "sideEffects": [
+    "style/**/*.css",
+    "style/index.js"
+  ],
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "style": "style/index.css",
+  "directories": {
+    "lib": "lib/"
+  },
+  "files": [
+    "lib/**/*.{d.ts,js,js.map,json}",
+    "style/base.css",
+    "style/index.css",
+    "style/index.js",
+    "jupyterlab_ghmath/labextension/**/*"
+  ],
+  "scripts": {
+    "build": "tsc -b",
+    "build:labextension": "build-labextension .",
+    "build:prod": "npm run clean && npm run build && npm run build:labextension -- --mode production",
+    "clean": "rimraf lib tsconfig.tsbuildinfo jupyterlab_ghmath/labextension",
+    "test": "npm run build && node --test tests/*.test.mjs"
+  },
+  "dependencies": {
+    "@jupyterlab/application": "^4.6.0",
+    "@jupyterlab/rendermime": "^4.6.0",
+    "katex": "^0.17.0",
+    "markdown-it": "^14.2.0",
+    "markdown-it-texmath": "^1.0.0"
+  },
+  "devDependencies": {
+    "@jupyterlab/builder": "^4.5.9",
+    "@types/markdown-it": "^14.1.2",
+    "rimraf": "^6.0.1",
+    "typescript": "~5.9.3"
+  },
+  "jupyterlab": {
+    "extension": true,
+    "outputDir": "jupyterlab_ghmath/labextension",
+    "disabledExtensions": [
+      "@jupyterlab/markedparser-extension:plugin"
+    ]
+  },
+  "styleModule": "style/index.js"
+}
+

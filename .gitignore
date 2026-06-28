@@ -1,0 +1,10 @@
+node_modules/
+lib/
+tsconfig.tsbuildinfo
+jupyterlab_ghmath/labextension/
+build/
+dist/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+
