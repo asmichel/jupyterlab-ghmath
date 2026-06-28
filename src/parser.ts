@@ -5,9 +5,9 @@ import type Token from "markdown-it/lib/token.mjs";
 import texmath from "markdown-it-texmath";
 
 /**
- * TEXMATH_DELIMITERS covers the GitHub, GitLab, and TeX delimiters needed here.
+ * TEXMATH_DELIMITERS puts GitHub/GitLab forms before ordinary dollar parsing.
  */
-const TEXMATH_DELIMITERS = ["dollars", "brackets", "gitlab", "beg_end"] as const;
+const TEXMATH_DELIMITERS = ["gitlab", "dollars", "brackets", "beg_end"] as const;
 
 /**
  * HEADING_TAG_REGEX detects raw HTML heading blocks for outline metadata.
@@ -116,4 +116,3 @@ function containsInlineHeading(token: Token): boolean {
     }) ?? false
   );
 }
-

@@ -1,12 +1,13 @@
 # jupyterlab-ghmath
 
 `jupyterlab-ghmath` is a local JupyterLab 4 prebuilt extension that replaces
-JupyterLab's default Markdown parser with a `markdown-it` parser configured for
-GitHub-style KaTeX math delimiters.
+JupyterLab's default Markdown parser and KaTeX typesetter with GitHub-style math
+delimiter handling.
 
 The parser supports `$...$`, `$$...$$`, `\\(...\\)`, `\\[...\\]`, GitLab-style
 `$`...`$` spans, fenced `math` blocks, and `\\begin{...}` environments through
-`markdown-it-texmath`.
+`markdown-it-texmath` and a KaTeX typesetter that checks GitHub inline math
+before ordinary dollar-delimited math.
 
 ## Build
 
@@ -30,4 +31,3 @@ jupyter labextension list
 uv pip check --python /home/asmichel.guest/.local/share/uv/tools/jupyterlab/bin/python
 jupyter lab --version
 ```
-

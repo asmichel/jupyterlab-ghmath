@@ -25,10 +25,10 @@ def labextension_data_files() -> list[tuple[str, list[str]]]:
         target = Path("share") / "jupyter" / "labextensions" / PACKAGE_NAME
         if str(relative_parent) != ".":
             target = target / relative_parent
-        data_files.setdefault(str(target), []).append(str(path))
+        source = path.relative_to(HERE)
+        data_files.setdefault(str(target), []).append(source.as_posix())
 
     return sorted((target, sorted(paths)) for target, paths in data_files.items())
 
 
 setup(data_files=labextension_data_files())
-

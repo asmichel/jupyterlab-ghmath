@@ -38,8 +38,8 @@
   ],
   "scripts": {
     "build": "tsc -b",
-    "build:labextension": "build-labextension .",
-    "build:prod": "npm run clean && npm run build && npm run build:labextension -- --mode production",
+    "build:labextension": "build-labextension . --core-path ${JUPYTERLAB_CORE_PATH:-/home/asmichel.guest/.local/share/uv/tools/jupyterlab/share/jupyter/lab/static}",
+    "build:prod": "npm run clean && npm run build && npm run build:labextension",
     "clean": "rimraf lib tsconfig.tsbuildinfo jupyterlab_ghmath/labextension",
     "test": "npm run build && node --import tsx --test tests/*.test.ts"
   },
@@ -62,7 +62,10 @@
     "extension": true,
     "outputDir": "jupyterlab_ghmath/labextension",
     "disabledExtensions": [
-      "@jupyterlab/markedparser-extension:plugin"
+      "@jupyterlab/markedparser-extension:plugin",
+      "@jupyterlab/katex-extension:plugin",
+      "@jupyterlab/mathjax-extension:plugin",
+      "@jupyterlab/mathjax2-extension:plugin"
     ]
   },
   "styleModule": "style/index.js"

@@ -1,7 +1,7 @@
 import type { JupyterFrontEnd, JupyterFrontEndPlugin } from "@jupyterlab/application";
 import { ILatexTypesetter, IMarkdownParser } from "@jupyterlab/rendermime";
 
-import { installGitHubMathPatch } from "./latexPatch";
+import { createKatexTypesetter } from "./katexTypesetter";
 import { createMarkdownParser } from "./parser";
 
 import "../style/index.css";
@@ -20,22 +20,21 @@ const markdownParserPlugin: JupyterFrontEndPlugin<IMarkdownParser> = {
 };
 
 /**
- * latexPatchPlugin extends the current KaTeX typesetter with GitHub inline spans.
+ * katexTypesetterPlugin provides the KaTeX typesetter with GitHub delimiter support.
  */
-const latexPatchPlugin: JupyterFrontEndPlugin<void> = {
-  id: "jupyterlab-ghmath:latex-patch",
-  description: "Adds GitHub `$`...`$` inline math handling before KaTeX typesetting.",
+const katexTypesetterPlugin: JupyterFrontEndPlugin<ILatexTypesetter> = {
+  id: "jupyterlab-ghmath:katex-typesetter",
+  description: "Provides a KaTeX typesetter with GitHub `$`...`$` inline math support.",
   autoStart: true,
-  requires: [ILatexTypesetter],
-  activate: (_app: JupyterFrontEnd, latexTypesetter: ILatexTypesetter): void => {
-    installGitHubMathPatch(latexTypesetter);
+  provides: ILatexTypesetter,
+  activate: (_app: JupyterFrontEnd): ILatexTypesetter => {
+    return createKatexTypesetter();
   }
 };
 
 /**
  * plugins is the JupyterLab prebuilt extension entrypoint.
  */
-const plugins: JupyterFrontEndPlugin<unknown>[] = [markdownParserPlugin, latexPatchPlugin];
+const plugins: JupyterFrontEndPlugin<unknown>[] = [markdownParserPlugin, katexTypesetterPlugin];
 
 export default plugins;
-

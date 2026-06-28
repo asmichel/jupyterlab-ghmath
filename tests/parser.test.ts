@@ -45,6 +45,7 @@ x + y = z
   assert.match(html, /<h1>Heading<\/h1>/);
   assert.match(html, KATEX_CLASS_PATTERN);
   assert.doesNotMatch(html, /\$`\\sqrt/);
+  assert.doesNotMatch(html, /‘/);
   assert.doesNotMatch(html, /```math/);
 });
 

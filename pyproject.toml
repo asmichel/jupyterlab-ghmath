@@ -7,7 +7,7 @@ name = "jupyterlab-ghmath"
 version = "0.1.0"
 description = "JupyterLab Markdown parser with GitHub-style KaTeX math delimiters"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 license = "MIT"
 authors = [{ name = "Local" }]
 dependencies = ["jupyterlab>=4.6.0,<5"]
@@ -15,10 +15,8 @@ classifiers = [
   "Framework :: Jupyter",
   "Framework :: Jupyter :: JupyterLab",
   "Framework :: Jupyter :: JupyterLab :: 4",
-  "License :: OSI Approved :: MIT License",
   "Programming Language :: Python :: 3",
 ]
 
 [tool.setuptools]
 packages = ["jupyterlab_ghmath"]
-

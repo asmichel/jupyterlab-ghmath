@@ -5,6 +5,8 @@ jupyterlab_ghmath/labextension/
 build/
 dist/
 *.egg-info/
+__pycache__/
+.venv/
+.playwright-cli/
 .pytest_cache/
 .ruff_cache/
-
