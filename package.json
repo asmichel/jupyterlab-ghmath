@@ -41,7 +41,7 @@
     "build:labextension": "build-labextension .",
     "build:prod": "npm run clean && npm run build && npm run build:labextension -- --mode production",
     "clean": "rimraf lib tsconfig.tsbuildinfo jupyterlab_ghmath/labextension",
-    "test": "npm run build && node --test tests/*.test.mjs"
+    "test": "npm run build && node --import tsx --test tests/*.test.ts"
   },
   "dependencies": {
     "@jupyterlab/application": "^4.6.0",
@@ -53,7 +53,9 @@
   "devDependencies": {
     "@jupyterlab/builder": "^4.5.9",
     "@types/markdown-it": "^14.1.2",
+    "jsdom": "^29.1.1",
     "rimraf": "^6.0.1",
+    "tsx": "^4.22.4",
     "typescript": "~5.9.3"
   },
   "jupyterlab": {
@@ -65,4 +67,3 @@
   },
   "styleModule": "style/index.js"
 }
-
