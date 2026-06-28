@@ -16,6 +16,6 @@ Open `/home/asmichel.guest/jupyter-ghmath-smoke.md` in JupyterLab Markdown
 Preview and confirm that math, headings, links, lists, tables, inline code, and
 non-math code fences render correctly.
 
-`jupyter labextension list` should show `jupyterlab-ghmath` enabled and both
-`@jupyterlab/markedparser-extension:plugin` and `@jupyterlab/katex-extension:plugin`
-disabled.
+`jupyter labextension list` should show `jupyterlab-ghmath` enabled,
+`@jupyterlab/markedparser-extension:plugin` disabled, and
+`@jupyterlab/katex-extension:plugin` still enabled for non-Markdown LaTeX.
