@@ -10,7 +10,8 @@ readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
 authors = [{ name = "Local" }]
-dependencies = ["jupyterlab>=4.6.0,<5"]
+# Runtime dependencies preserve the local JupyterLab math-rendering setup.
+dependencies = ["jupyterlab>=4.6.0,<5", "jupyterlab-katex==3.4.0"]
 classifiers = [
   "Framework :: Jupyter",
   "Framework :: Jupyter :: JupyterLab",
@@ -19,4 +20,5 @@ classifiers = [
 ]
 
 [tool.setuptools]
+include-package-data = false
 packages = ["jupyterlab_ghmath"]

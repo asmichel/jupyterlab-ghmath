@@ -9,13 +9,13 @@
     "markdown",
     "katex"
   ],
-  "homepage": "https://github.com/local/jupyterlab-ghmath",
+  "homepage": "https://github.com/asmichel/jupyterlab-ghmath",
   "bugs": {
-    "url": "https://github.com/local/jupyterlab-ghmath/issues"
+    "url": "https://github.com/asmichel/jupyterlab-ghmath/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/local/jupyterlab-ghmath.git"
+    "url": "https://github.com/asmichel/jupyterlab-ghmath.git"
   },
   "license": "MIT",
   "author": "Local",
@@ -38,7 +38,7 @@
   ],
   "scripts": {
     "build": "tsc -b",
-    "build:labextension": "build-labextension . --core-path ${JUPYTERLAB_CORE_PATH:-/home/asmichel.guest/.local/share/uv/tools/jupyterlab/share/jupyter/lab/static}",
+    "build:labextension": "build-labextension . --core-path \"${JUPYTERLAB_CORE_PATH:-$(jupyter-lab path | sed -n 's/^Application directory:[[:space:]]*//p')/static}\"",
     "build:prod": "npm run clean && npm run build && npm run build:labextension",
     "clean": "rimraf lib tsconfig.tsbuildinfo jupyterlab_ghmath/labextension",
     "test": "npm run build && node --import tsx --test tests/*.test.ts"
